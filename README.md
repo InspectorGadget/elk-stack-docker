@@ -15,7 +15,7 @@ This is a simple guide to get the ELK stack up and running using Docker.
 | `docker-compose.yml` | Contains the configuration for the Docker Compose. |
 | `docker-compose.yml` | Contains the configuration for the Docker Compose. |
 | `docker/configs/logstash.conf` | Contains the configuration for Logstash. |
-| `docker/logstash` | Contains all the default plugins, and MariaDB connector driver. |
+| `docker/logstash/` | Contains all the default plugins, and MariaDB connector driver. |
 | `app/__init__.py` | Contains the Flask application. |
 | `app/models/` | Contains the SQLAlchemy models. |
 | `app/views/` | Contains the Flask routes. |
@@ -33,7 +33,7 @@ This is a simple guide to get the ELK stack up and running using Docker.
     - PHPMyAdmin: http://127.0.0.1:8001
 
 ## Usage
-- Kibana
+* <b>Kibana</b>
     1. Open Kibana in your browser.
     2. Click on `Management` in the left sidebar.
     3. Click on `Index Patterns`.
@@ -45,7 +45,7 @@ This is a simple guide to get the ELK stack up and running using Docker.
     9. Click on `Add filter`.
     10. Set `Field` to `is_deleted` and `Operator` to `is not` and the value to `true`.
     11. Click on `Apply filter`.
-- Adding new Student
+* <b>Adding new Student</b>
     1. Use any REST client to send a `POST` request to the `Backend` service (URI: /students).
     2. Use this JSON as the request body:
     ```json
@@ -62,7 +62,7 @@ This is a simple guide to get the ELK stack up and running using Docker.
     }
     ```
     <b>NOTE:</b> Please note that the changes could take a few seconds to reflect in Kibana.
-- Updating a Student
+* <b>Updating a Student</b>
     1. Use any REST client to send a `PUT` request to the `Backend` service (URI: /students/{id}).
     2. Use this JSON as the request body:
     ```json
@@ -79,7 +79,7 @@ This is a simple guide to get the ELK stack up and running using Docker.
     }
     ```
     <b>NOTE:</b> Please note that the changes could take a few seconds to reflect in Kibana.
-- Deleting a Student
+* <b>Deleting a Student</b>
     1. Use any REST client to send a `DELETE` request to the `Backend` service (URI: /students/{id}).
     2. The response should be a `200` status code with the following text `Set as Deleted`. The student is not actually deleted from the database, but is marked as deleted.
     3. You can verify this by checking the `students` index in Kibana.
