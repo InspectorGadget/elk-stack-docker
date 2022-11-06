@@ -1,0 +1,6 @@
+flask
+flask-cors
+flask-sqlalchemy
+pymysql
+flask-migrate
+elasticsearch==7.8.1

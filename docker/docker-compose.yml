@@ -1,0 +1,130 @@
+version: '3'
+services:
+  db:
+    image: mariadb:latest
+    restart: always
+    container_name: mariadb
+    labels:
+      service: development
+    volumes:
+      - type: volume
+        source: mariadb_data
+        target: /var/lib/mysql
+    healthcheck:
+      test: "/usr/bin/mysql --user=root --password=secret --execute \"SHOW DATABASES;\""
+      interval: 5s
+      timeout: 1s
+      retries: 5
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_DATABASE=logstash
+    networks:
+      - internal
+    ports:
+      - 3306:3306
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    labels:
+      service: development
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+      - PMA_USER=root
+      - PMA_PASSWORD=secret
+      - PMA_DBNAME=logstash
+    networks:
+      - internal
+    ports:
+      - 8001:80
+      - 8002:8080
+  backend:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    restart: always
+    container_name: backend
+    labels:
+      service: development
+    depends_on:
+      db:
+        condition: service_healthy
+    links:
+      - db
+      - elasticsearch
+    environment:
+      - DATABASE_URL=mysql+pymysql://root:secret@db:3306/logstash
+      - ELASTICSEARCH_HOST=elasticsearch
+      - FLASK_DEBUG=1
+    command: 
+      - /bin/bash
+      - -c
+      - "flask db upgrade && flask run --host=0.0.0.0 --port=5000"
+    networks:
+      - internal
+    ports:
+      - 5001:5000
+  elasticsearch:
+    image: elasticsearch:7.8.1
+    container_name: elasticsearch
+    labels:
+      service: development
+    environment:
+      - node.name=es01
+      - xpack.security.enabled=false
+      - cluster.name=es-docker-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+    volumes:
+      - type: volume
+        source: elasticsearch_data
+        target: /usr/share/elasticsearch/data
+    networks:
+      - internal
+    ports:
+      - 9200:9200
+      - 9300:9300
+  logstash:
+    image: logstash:7.8.1
+    container_name: logstash
+    labels:
+      service: development
+    volumes:
+      - ./configs:/logstash_dir
+      - ./logstash:/usr/share/logstash/logstash-core/lib/jars
+    command: logstash -f /logstash_dir/logstash.conf
+    depends_on:
+      - elasticsearch
+      - db
+    links:
+      - db
+      - elasticsearch
+    networks:
+      - internal
+    ports:
+      - 5959:5959
+  kibana:
+    image: kibana:7.8.1
+    container_name: kibana
+    labels:
+      service: development
+    environment:
+      - xpack.security.enabled="false"
+      - ELASTICSEARCH_URL="http://elasticsearch:9200"
+      - ELASTIC_CONTAINER=false
+    depends_on:
+      - elasticsearch
+    links:
+      - elasticsearch
+    networks:
+      - internal
+    ports:
+      - 5601:5601
+networks:
+  internal:
+    driver: bridge
+volumes:
+  mariadb_data:
+    driver: local
+  elasticsearch_data:
+    driver: local
