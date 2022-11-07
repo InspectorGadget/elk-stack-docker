@@ -3,11 +3,12 @@
 ![ELK Stack](imgs/elk-arch.png)
 [Source: [Fabian Lee](https://fabianlee.org/2016/11/28/elk-architectural-points-of-extension-and-scalability-for-the-elk-stack/)]
 
-This is a simple guide to get the ELK stack up and running using Docker.
+This is a simple guide to get the ELK stack up and running using Docker. Terraform Module is also provided.
 
 ## Prerequisites
 - Docker
 - Docker Compose
+- Terraform (Optional)
 
 ## Files
 | Name | Description |
@@ -22,7 +23,7 @@ This is a simple guide to get the ELK stack up and running using Docker.
 
 ## Installation
 1. Clone this repository.
-2. Run `docker-compose -p elk-stack up -d --build` in the `docker/` directory of this repository.
+2. Run `docker-compose -p elk-stack up -d --build` in the `docker/` directory of this repository or initialize Terraform and run `terraform apply -auto-approve` in the `terraform/` directory of this repository.
 3. Wait for the containers to start up.
 4. Links to the services:
     - Kibana: http://127.0.0.1:5601
